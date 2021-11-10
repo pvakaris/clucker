@@ -9,6 +9,8 @@ from microblogs.tests.helpers import LogInTester
 class SignUpViewTestCase(TestCase, LogInTester):
     """Tests of the sign up view."""
 
+    fixtures = ['microblogs/tests/fixtures/default_user.json']
+
     def setUp(self):
         self.url = reverse('sign_up')
         self.form_input = {
@@ -20,9 +22,17 @@ class SignUpViewTestCase(TestCase, LogInTester):
             'new_password': 'Password123',
             'password_confirmation': 'Password123'
         }
+        self.user = User.objects.get(username = "@johndoe")
 
     def test_sign_up_url(self):
         self.assertEqual(self.url,'/sign_up/')
+
+    def test_get_sign_up_redirects_when_logged_in(self):
+        self.client.login(username = self.user.username, password = "Password123")
+        response = self.client.get(self.url, follow = True)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
 
     def test_get_sign_up(self):
         response = self.client.get(self.url)
@@ -61,3 +71,13 @@ class SignUpViewTestCase(TestCase, LogInTester):
         is_password_correct = check_password('Password123', user.password)
         self.assertTrue(is_password_correct)
         self.assertTrue(self._is_logged_in())
+
+    def test_post_sign_up_redirects_when_logged_in(self):
+        self.client.login(username = self.user.username, password = "Password123")
+        before_count = User.objects.count()
+        response = self.client.post(self.url, self.form_input, follow = True)
+        after_count = User.objects.count()
+        self.assertEqual(after_count, before_count)
+        redirect_url = reverse('feed')
+        self.assertRedirects(response, redirect_url, status_code=302, target_status_code=200)
+        self.assertTemplateUsed(response, 'feed.html')
