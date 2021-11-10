@@ -1,0 +1,15 @@
+[
+  {
+    "model": "microblogs.user",
+    "pk": 2,
+    "fields": {
+      "first_name": "Jane",
+      "last_name": "Doe",
+      "username": "@janedoe",
+      "email": "janedoe@example.org",
+      "bio": "The quick brown fox jumps over the lazy dog.",
+      "password": "pbkdf2_sha256$260000$bifRhLynUzjWi7maskvChV$JP731rLg/OtSJ5EIlO2XhgkGkvTaQG7VxssIUj5gfHc=",
+      "is_active": true
+    }
+  }
+]
